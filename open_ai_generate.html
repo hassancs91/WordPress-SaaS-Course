@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AJAX Function Test</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .ajax-test-container * {
+            all: initial; /* Reset all inherited styles */
+            font-family: Arial, sans-serif; /* Set a default font */
+        }
+        .ajax-test-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 100%; /* Set width to full */
+            box-sizing: border-box; /* Include padding in the width */
+        }
+        .ajax-test-container label, .ajax-test-container input {
+            display: block;
+            width: calc(100% - 20px); /* Full width minus padding */
+            margin-bottom: 10px;
+        }
+        .ajax-test-container input[type="text"], .ajax-test-container input[type="submit"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .ajax-test-container input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .ajax-test-container input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .ajax-test-container #results, .ajax-test-container #loading {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #efefef;
+            display: none;
+        }
+    </style>
+    <script>
+        jQuery(document).ready(function($) {
+            $('#ajax-test-form').on('submit', function(e) {
+                e.preventDefault();
+                var websiteUrl = $('#website-url').val();
+                var functionName = $('#function-name').val();
+                var topic = $('#topic').val();
+                var fullUrl = websiteUrl + '/wp-admin/admin-ajax.php';
+
+                $('#loading').show();
+                $('#results').hide();
+
+                $.ajax({
+                    url: fullUrl,
+                    method: 'POST',
+                    data: {
+                        action: functionName,
+                        topic: topic
+                    },
+                    success: function(response) {
+                        $('#results').html('<pre>' + JSON.stringify(response, null, 2) + '</pre>').css('color', 'green').show();
+                    },
+                    error: function() {
+                        $('#results').html('There was an error. Make sure the URL and function name are correct and your function is set up properly.').css('color', 'red').show();
+                    },
+                    complete: function() {
+                        $('#loading').hide();
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="ajax-test-container">
+        <form id="ajax-test-form">
+            <label for="website-url">Enter your WordPress website URL:</label>
+            <input type="text" id="website-url" name="website_url" placeholder="https://yourwebsite.com">
+            
+            <label for="function-name">Enter the AJAX function name:</label>
+            <input type="text" id="function-name" name="function_name" placeholder="return_fixed_titles">
+            
+            <label for="topic">Enter a topic:</label>
+            <input type="text" id="topic" name="topic" placeholder="e.g., Technology, Nature">
+
+
+            <input type="submit" value="Generate!">
+        </form>
+        <div id="loading">Loading...</div>
+        <div id="results"></div>
+    </div>
+</body>
+</html>
